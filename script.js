@@ -1,76 +1,82 @@
-d3.json('https://d3js.org/world-50m.v1.json')
-  .then(world => {
-    const countries = topojson.feature(world, world.objects.countries).features;
-    d3.csv('emissionsData.csv').then(emissionsData => {
-      createMap(countries, emissionsData);
-    });
+d3.csv("cars2017.csv").then(data => {
+  const groupedData = d3.group(data, d => d.Brand);
+  const averageMileage = Array.from(groupedData).map(([key, value]) => {
+    const avg = d3.mean(value, d => +d.Mileage);
+    return { Brand: key, Mileage: avg };
   });
+  createScene1(averageMileage);
+});
 
-function createMap(countries, emissionsData) {
-  // Create SVG
-  const svg = d3.select('body').append('svg').attr('width', 800).attr('height', 600);
+function createScene1(data) {
+  // Select and clear the SVG container
+  const svg = d3.select("#visualization").html("");
 
-  // Create projection
-  const projection = d3.geoNaturalEarth1().scale(125).translate([400, 300]);
-  const path = d3.geoPath().projection(projection);
-
-  // Scale for country fill color
-  const emissionsScale = d3.scaleLinear().domain([0, d3.max(emissionsData, d => d.emissions)]).range(['white', 'red']);
-
-  // Draw countries on the map
-  svg.selectAll('path')
-    .data(countries)
-    .enter()
-    .append('path')
-    .attr('d', path)
-    .attr('fill', d => {
-      const countryEmissions = emissionsData.find(e => e.country === d.properties.name);
-      return countryEmissions ? emissionsScale(countryEmissions.emissions) : '#ccc';
-    })
-    .on('click', function(event, d) {
-      const countryEmissions = emissionsData.find(e => e.country === d.properties.name);
-      if (countryEmissions) {
-        createBarChart(countryEmissions);
-      }
-    });
-}
-
-function createBarChart(countryEmissions) {
-  // Clear SVG
-  d3.select('svg').remove();
-
-  // Create new SVG
-  const svg = d3.select('body').append('svg').attr('width', 800).attr('height', 600);
-
-  // Create scales
-  const xScale = d3.scaleBand()
-    .domain(countryEmissions.emissions.map(d => d.year))
-    .range([0, 800])
-    .padding(0.2);
-
-  const yScale = d3.scaleLinear()
-    .domain([0, d3.max(countryEmissions.emissions, d => d.amount)])
-    .range([600, 0]);
-
-  // Create axes
-  const xAxis = d3.axisBottom(xScale).tickFormat(d3.format("d"));
-  const yAxis = d3.axisLeft(yScale);
-
-  // Draw axes
-  svg.append("g")
-    .attr("transform", "translate(0,600)")
-    .call(xAxis);
-
-  svg.append("g").call(yAxis);
+  // Define scales
+  const xScale = d3.scaleBand().domain(data.map(d => d.Brand)).range([0, 800]);
+  const yScale = d3.scaleLinear().domain([0, d3.max(data, d => d.Mileage)]).range([600, 0]);
 
   // Draw bars
-  svg.selectAll('rect')
-    .data(countryEmissions.emissions)
-    .enter()
-    .append('rect')
-    .attr('x', d => xScale(d.year))
-    .attr('y', d => yScale(d.amount))
-    .attr('width', xScale.bandwidth())
-    .attr('height', d => 600 - yScale(d.amount))
-    .attr('fill', 'steelblue');
+  svg.selectAll("rect")
+    .data(data)
+    .enter().append("rect")
+    .attr("x", d => xScale(d.Brand))
+    .attr("y", d => yScale(d.Mileage))
+    .attr("width", xScale.bandwidth())
+    .attr("height", d => 600 - yScale(d.Mileage))
+    .attr("fill", "steelblue");
+
+  // Add axes
+  svg.append("g").attr("transform", "translate(0,600)").call(d3.axisBottom(xScale));
+  svg.append("g").call(d3.axisLeft(yScale));
 }
+
+function createScene2() {
+  d3.csv("cars2017.csv").then(data => {
+    const top5Cars = data.sort((a, b) => b.Mileage - a.Mileage).slice(0, 5);
+
+    // Select and clear the SVG container
+    const svg = d3.select("#visualization").html("");
+
+    // Define scales
+    const xScale = d3.scaleBand().domain(top5Cars.map(d => d.Car)).range([0, 800]);
+    const yScale = d3.scaleLinear().domain([0, d3.max(top5Cars, d => +d.Mileage)]).range([600, 0]);
+
+    // Draw bars
+    svg.selectAll("rect")
+      .data(top5Cars)
+      .enter().append("rect")
+      .attr("x", d => xScale(d.Car))
+      .attr("y", d => yScale(d.Mileage))
+      .attr("width", xScale.bandwidth())
+      .attr("height", d => 600 - yScale(d.Mileage))
+      .attr("fill", "green");
+
+    // Add axes
+    svg.append("g").attr("transform", "translate(0,600)").call(d3.axisBottom(xScale));
+    svg.append("g").call(d3.axisLeft(yScale));
+  });
+}
+
+function createScene3() {
+  d3.csv("cars2017.csv").then(data => {
+    // Filter data for selected brands (e.g., 'Toyota', 'Ford')
+    const selectedData = data.filter(d => d.Brand === 'Toyota' || d.Brand === 'Ford');
+
+    // Select and clear the SVG container
+    const svg = d3.select("#visualization").html("");
+
+    // Define scales
+    const xScale = d3.scaleLinear().domain([0, d3.max(selectedData, d => +d.Horsepower)]).range([0, 800]);
+    const yScale = d3.scaleLinear().domain([0, d3.max(selectedData, d => +d.Price)]).range([600, 0]);
+
+    // Draw circles
+    svg.selectAll("circle")
+      .data(selectedData)
+      .enter().append("circle")
+      .attr("cx", d => xScale(d.Horsepower))
+      .attr("cy", d => yScale(d.Price))
+      .attr("r", 5)
+      .attr("fill", d => d.Brand === 'Toyota' ? "red" : "blue");
+
+    // Add axes
+    svg.append("g").attr
