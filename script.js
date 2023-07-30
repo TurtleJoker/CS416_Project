@@ -1,3 +1,5 @@
+let selectedBrands = ['Toyota', 'Ford'];
+
 d3.csv("cars2017.csv").then(data => {
   const groupedData = d3.group(data, d => d.Brand);
   const averageMileage = Array.from(groupedData).map(([key, value]) => {
@@ -28,6 +30,20 @@ function createScene1(data) {
   // Add axes
   svg.append("g").attr("transform", "translate(0,600)").call(d3.axisBottom(xScale));
   svg.append("g").call(d3.axisLeft(yScale));
+
+  const highestMileageBrand = d3.max(data, d => d.Mileage);
+  const annotations = [
+    {
+      note: { label: "Highest average mileage" },
+      x: xScale(highestMileageBrand.Brand),
+      y: yScale(highestMileageBrand.Mileage),
+      dy: -30,
+      dx: 0
+    }
+  ];
+
+  const makeAnnotations = d3.annotation().annotations(annotations);
+  svg.append("g").call(makeAnnotations);
 }
 
 function createScene2() {
@@ -60,7 +76,7 @@ function createScene2() {
 function createScene3() {
   d3.csv("cars2017.csv").then(data => {
     // Filter data for selected brands (e.g., 'Toyota', 'Ford')
-    const selectedData = data.filter(d => d.Brand === 'Toyota' || d.Brand === 'Ford');
+    const selectedData = data.filter(d => selectedBrands.includes(d.Brand));
 
     // Select and clear the SVG container
     const svg = d3.select("#visualization").html("");
