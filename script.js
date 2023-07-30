@@ -1,3 +1,14 @@
+// Place this code at the beginning of your script or inside an initialization function
+d3.selectAll("input[type=checkbox]").on("change", function() {
+  if (this.checked) {
+    selectedBrands.push(this.value);
+  } else {
+    selectedBrands = selectedBrands.filter(brand => brand !== this.value);
+  }
+  createScene3(); // Update the scene
+});
+
+
 let selectedBrands = ['Toyota', 'Ford'];
 
 d3.csv("cars2017.csv").then(data => {
@@ -71,6 +82,20 @@ function createScene2() {
     svg.append("g").attr("transform", "translate(0,600)").call(d3.axisBottom(xScale));
     svg.append("g").call(d3.axisLeft(yScale));
   });
+
+  const mostEfficientCar = d3.max(top5Cars, d => d.Mileage);
+  const annotations = [
+    {
+      note: { label: "Most fuel-efficient car" },
+      x: xScale(mostEfficientCar.Car),
+      y: yScale(mostEfficientCar.Mileage),
+      dy: -30,
+      dx: 0
+    }
+  ];
+
+  const makeAnnotations = d3.annotation().annotations(annotations);
+  svg.append("g").call(makeAnnotations);
 }
 
 function createScene3() {
@@ -96,3 +121,16 @@ function createScene3() {
 
     // Add axes
     svg.append("g").attr
+
+    const toyotaCars = selectedData.filter(d => d.Brand === 'Toyota');
+  const annotations = toyotaCars.map(car => ({
+    note: { label: car.Car },
+    x: xScale(car.Horsepower),
+    y: yScale(car.Price),
+    dy: -10,
+    dx: 0
+  }));
+
+  const makeAnnotations = d3.annotation().annotations(annotations);
+  svg.append("g").call(makeAnnotations);
+}
