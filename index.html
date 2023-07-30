@@ -9,7 +9,19 @@
     <script src="https://unpkg.com/topojson-client@3"></script>
 </head>
 <body>
-    <!-- Visualization will be inserted here -->
+  <!-- Navigation Controls -->
+  <div id="controls">
+    <button onclick="createScene1()">Scene 1</button>
+    <button onclick="createScene2()">Scene 2</button>
+    <button onclick="createScene3()">Scene 3</button>
+  </div>
+
+  <!-- Visualization Container -->
+  <svg id="visualization" width="800" height="600"></svg>
+
+  <!-- Scripts -->
+  <script src="script.js"></script> <!-- Assuming your JavaScript code is in script.js -->
 </body>
+
 </html>
 
