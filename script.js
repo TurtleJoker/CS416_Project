@@ -13,7 +13,7 @@ d3.selectAll("input[type=checkbox]").on("change", function() {
 
 // Scene 1: Overview of All Car Brands and Their Average Mileage
 function createScene1() {
-  d3.csv("https://flunky.github.io/cars2017.csv").then(data => {
+  d3.csv("https://github.com/TurtleJoker/CS416_Project/blob/main/cars2017.csv").then(data => {
     const svg = d3.select("#visualization").html("");
     const margin = { top: 20, right: 20, bottom: 30, left: 40 };
     const width = +svg.attr("width") - margin.left - margin.right;
@@ -59,7 +59,7 @@ function createScene1() {
 
 // Scene 2: Focus on the Top 5 Most Fuel-Efficient Cars (Line Chart)
 function createScene2() {
-  d3.csv("https://flunky.github.io/cars2017.csv").then(data => {
+  d3.csv("https://github.com/TurtleJoker/CS416_Project/blob/main/cars2017.csv").then(data => {
     const top5Cars = data.sort((a, b) => b.Mileage - a.Mileage).slice(0, 5);
     const svg = d3.select("#visualization").html("");
     const margin = { top: 20, right: 20, bottom: 30, left: 40 };
@@ -112,7 +112,7 @@ function createScene2() {
 
 // Scene 3: Comparison Between Horsepower and Price for Selected Brands (Scatter Plot)
 function createScene3() {
-  d3.csv("https://flunky.github.io/cars2017.csv").then(data => {
+  d3.csv("https://github.com/TurtleJoker/CS416_Project/blob/main/cars2017.csv").then(data => {
     const selectedData = data.filter(d => selectedBrands.includes(d.Brand));
     const svg = d3.select("#visualization").html("");
     const margin = { top: 20, right: 20, bottom: 30, left: 40 };
