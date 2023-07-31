@@ -15,7 +15,7 @@ d3.selectAll("input[type=checkbox]").on("change", function() {
 function createScene1() {
   d3.csv("https://raw.githubusercontent.com/TurtleJoker/CS416_Project/main/cars2017.csv").then(data => {
     // Clear the existing visualization
-    d3.select("#visualization").selectAll("*").remove();
+    d3.select("#sceneTitle").text("Overview of Car Brands' Average City Mileage");
     const svg = d3.select("#visualization");
     const margin = { top: 20, right: 40, bottom: 30, left: 40 };
     const width = +svg.attr("width") - margin.left - margin.right;
@@ -70,7 +70,7 @@ function createScene2() {
     const top5Cars = data.sort((a, b) => b.AverageHighwayMPG - a.AverageHighwayMPG).slice(0, 5);
     
     // Clear the existing visualization
-    d3.select("#visualization").selectAll("*").remove();
+    d3.select("#sceneTitle").text("Top 5 Most Fuel-Efficient Cars on the Highway");
     const svg = d3.select("#visualization");
     const margin = { top: 20, right: 40, bottom: 30, left: 40 };
     const width = +svg.attr("width") - margin.left - margin.right;
@@ -126,7 +126,7 @@ function createScene3() {
     const selectedData = data.filter(d => selectedBrands.includes(d.Make));
 
     // Clear the existing visualization
-    d3.select("#visualization").selectAll("*").remove();
+    d3.select("#sceneTitle").text("Comparison Between Engine Cylinders and Average City MPG for Selected Brands");
     const svg = d3.select("#visualization");
     const margin = { top: 20, right: 40, bottom: 30, left: 40 };
     const width = +svg.attr("width") - margin.left - margin.right;
