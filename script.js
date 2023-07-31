@@ -41,7 +41,8 @@ function createScene1() {
     const groupedData = d3.nest()
       .key(d => d.Make)
       .rollup(v => d3.mean(v, d => +d.AverageCityMPG))
-      .entries(data);
+      .entries(data)
+      .sort((a, b) => a.value - b.value);
 
     const xScale = d3.scaleBand().rangeRound([0, width]).domain(groupedData.map(d => d.key));
     const yScale = d3.scaleLinear().rangeRound([height, 0]).domain([0, d3.max(groupedData, d => d.value)]);
@@ -54,7 +55,7 @@ function createScene1() {
       .attr("dx", "-.8em")
       .attr("dy", ".15em")
       .style("text-anchor", "end");
-    
+
 
     g.append("g")
       .call(d3.axisLeft(yScale));
@@ -67,7 +68,9 @@ function createScene1() {
       .attr("y", d => yScale(d.value))
       .attr("width", xScale.bandwidth())
       .attr("height", d => height - yScale(d.value))
-      .attr("fill", "blue");
+      .attr("fill", "lightblue")
+      .attr("stroke", "black")
+      .attr("stroke-width", 1);
 
     // Annotations for Scene 1
     const highestMileageBrand = groupedData.reduce((max, brand) => (brand.value > max.value ? brand : max), groupedData[0]);
@@ -95,7 +98,7 @@ function createScene2() {
     const width = +svg.attr("width") - margin.left - margin.right;
     const height = +svg.attr("height") - margin.top - margin.bottom;
     const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
-    
+
     // Top 5 cars by highway mileage
     const top5Cars = data.sort((a, b) => b.AverageHighwayMPG - a.AverageHighwayMPG).slice(0, 5);
 
