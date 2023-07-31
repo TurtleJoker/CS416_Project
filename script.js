@@ -43,9 +43,6 @@ function createScene1() {
       .rollup(v => d3.mean(v, d => +d.AverageCityMPG))
       .entries(data);
 
-    // Sort in descending order
-    groupedData.sort((a, b) => b.value - a.value);
-
     const xScale = d3.scaleBand().rangeRound([0, width]).domain(groupedData.map(d => d.key));
     const yScale = d3.scaleLinear().rangeRound([height, 0]).domain([0, d3.max(groupedData, d => d.value)]);
 
