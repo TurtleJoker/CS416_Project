@@ -11,11 +11,27 @@ d3.selectAll("input[type=checkbox]").on("change", function() {
   createScene3(); // Update the scene
 });
 
+// Global variable to track current scene
+let currentScene = 1;
+
+// Function to update current scene based on selected brands
+function updateScene() {
+  if (currentScene === 1) {
+    createScene1();
+  } else if (currentScene === 2) {
+    createScene2();
+  } else if (currentScene === 3) {
+    createScene3();
+  }
+}
+
 //
 function createScene1() {
+  currentScene = 1;
+  d3.select("#sceneTitle").text("Overview of Car Brands' Average City Mileage");
   d3.csv("https://raw.githubusercontent.com/TurtleJoker/CS416_Project/main/cars2017.csv").then(data => {
     // Clear the existing visualization
-    d3.select("#sceneTitle").text("Overview of Car Brands' Average City Mileage");
+    d3.select("#visualization").selectAll("*").remove();
     const svg = d3.select("#visualization");
     const margin = { top: 20, right: 40, bottom: 30, left: 40 };
     const width = +svg.attr("width") - margin.left - margin.right;
@@ -66,11 +82,13 @@ function createScene1() {
 
 // Scene 2: Focus on the Top 5 Cars with the Highest Average Highway Mileage (Line Chart)
 function createScene2() {
+  currentScene = 2;
+  d3.select("#sceneTitle").text("Top 5 Most Fuel-Efficient Cars on the Highway");
   d3.csv("https://raw.githubusercontent.com/TurtleJoker/CS416_Project/main/cars2017.csv").then(data => {
     const top5Cars = data.sort((a, b) => b.AverageHighwayMPG - a.AverageHighwayMPG).slice(0, 5);
     
     // Clear the existing visualization
-    d3.select("#sceneTitle").text("Top 5 Most Fuel-Efficient Cars on the Highway");
+    d3.select("#visualization").selectAll("*").remove();
     const svg = d3.select("#visualization");
     const margin = { top: 20, right: 40, bottom: 30, left: 40 };
     const width = +svg.attr("width") - margin.left - margin.right;
@@ -122,11 +140,13 @@ function createScene2() {
 
 // Scene 3: Comparison Between Engine Cylinders and Average City MPG for Selected Brands (Scatter Plot)
 function createScene3() {
+  currentScene = 3;
+  d3.select("#sceneTitle").text("Comparison Between Engine Cylinders and Average City MPG for Selected Brands");
   d3.csv("https://raw.githubusercontent.com/TurtleJoker/CS416_Project/main/cars2017.csv").then(data => {
-    const selectedData = data.filter(d => selectedBrands.includes(d.Make));
+    const filteredData = data.filter(d => selectedBrands.includes(d.Make));
 
     // Clear the existing visualization
-    d3.select("#sceneTitle").text("Comparison Between Engine Cylinders and Average City MPG for Selected Brands");
+    d3.select("#visualization").selectAll("*").remove();
     const svg = d3.select("#visualization");
     const margin = { top: 20, right: 40, bottom: 30, left: 40 };
     const width = +svg.attr("width") - margin.left - margin.right;
