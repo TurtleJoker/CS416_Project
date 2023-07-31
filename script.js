@@ -13,7 +13,7 @@ d3.selectAll("input[type=checkbox]").on("change", function() {
 
 //
 function createScene1() {
-  d3.csv("cars2017.csv").then(data => {
+  d3.csv("https://raw.githubusercontent.com/TurtleJoker/CS416_Project/main/cars2017.csv").then(data => {
     // Clear the existing visualization
     d3.select("#visualization").selectAll("*").remove();
     const svg = d3.select("#visualization");
@@ -65,7 +65,7 @@ function createScene1() {
 
 // Scene 2: Focus on the Top 5 Cars with the Highest Average Highway Mileage (Line Chart)
 function createScene2() {
-  d3.csv("cars2017.csv").then(data => {
+  d3.csv("https://raw.githubusercontent.com/TurtleJoker/CS416_Project/main/cars2017.csv").then(data => {
     const top5Cars = data.sort((a, b) => b.AverageHighwayMPG - a.AverageHighwayMPG).slice(0, 5);
     
     // Clear the existing visualization
@@ -118,7 +118,7 @@ function createScene2() {
 
 // Scene 3: Comparison Between Engine Cylinders and Average City MPG for Selected Brands (Scatter Plot)
 function createScene3() {
-  d3.csv("cars2017.csv").then(data => {
+  d3.csv("https://raw.githubusercontent.com/TurtleJoker/CS416_Project/main/cars2017.csv").then(data => {
     const selectedData = data.filter(d => selectedBrands.includes(d.Make));
 
     // Clear the existing visualization
