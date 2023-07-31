@@ -37,17 +37,14 @@ function createScene1() {
     const height = +svg.attr("height") - margin.top - margin.bottom;
     const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Average mileage by brand
-    const averageMileageByBrand = d3.nest()
+    // Group data by Make and calculate the average city MPG
+    const groupedData = d3.nest()
       .key(d => d.Make)
-      .rollup(v => d3.mean(v, d => +d["City MPG"]))
+      .rollup(v => d3.mean(v, d => +d.AverageCityMPG))
       .entries(data);
 
-    const xScale = d3.scaleBand().rangeRound([0, width]);
-    const yScale = d3.scaleLinear().rangeRound([height, 0]);
-
-    xScale.domain(averageMileageByBrand.map(d => d.key));
-    yScale.domain([0, d3.max(averageMileageByBrand, d => d.value)]);
+    const xScale = d3.scaleBand().rangeRound([0, width]).domain(groupedData.map(d => d.key));
+    const yScale = d3.scaleLinear().rangeRound([height, 0]).domain([0, d3.max(groupedData, d => d.value)]);
 
     g.append("g")
       .attr("transform", `translate(0,${height})`)
@@ -63,7 +60,7 @@ function createScene1() {
       .call(d3.axisLeft(yScale));
 
     g.selectAll(".bar")
-      .data(averageMileageByBrand)
+      .data(groupedData)
       .enter().append("rect")
       .attr("class", "bar")
       .attr("x", d => xScale(d.key))
@@ -72,11 +69,12 @@ function createScene1() {
       .attr("height", d => height - yScale(d.value));
 
     // Annotations for Scene 1
+    const highestMileageBrand = groupedData.reduce((max, brand) => (brand.value > max.value ? brand : max), groupedData[0]);
     const annotations = [
       {
         note: { label: "Highest average city mileage" },
-        x: xScale("Toyota"), // Example
-        y: yScale(28), // Example
+        x: xScale(highestMileageBrand.key),
+        y: yScale(highestMileageBrand.value),
         dy: -30,
         dx: 0
       }
@@ -91,15 +89,14 @@ function createScene2() {
   currentScene = 2;
   d3.select("#sceneTitle").text("Top 5 Most Fuel-Efficient Cars on the Highway");
   d3.csv("https://raw.githubusercontent.com/TurtleJoker/CS416_Project/main/cars2017.csv").then(data => {
-    const top5Cars = data.sort((a, b) => b.AverageHighwayMPG - a.AverageHighwayMPG).slice(0, 5);
-    
-    // Clear the existing visualization
-    d3.select("#visualization").selectAll("*").remove();
-    const svg = d3.select("#visualization");
-    const margin = { top: 20, right: 40, bottom: 30, left: 40 };
+    const svg = d3.select("#visualization").html("");
+    const margin = { top: 20, right: 20, bottom: 30, left: 40 };
     const width = +svg.attr("width") - margin.left - margin.right;
     const height = +svg.attr("height") - margin.top - margin.bottom;
     const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+    
+    // Top 5 cars by highway mileage
+    const top5Cars = data.sort((a, b) => b.AverageHighwayMPG - a.AverageHighwayMPG).slice(0, 5);
 
     const xScale = d3.scalePoint().range([0, width]).domain(top5Cars.map(d => d.Make));
     const yScale = d3.scaleLinear().rangeRound([height, 0]).domain([0, d3.max(top5Cars, d => +d.AverageHighwayMPG)]);
@@ -107,10 +104,7 @@ function createScene2() {
     g.append("g")
       .attr("transform", `translate(0,${height})`)
       .call(d3.axisBottom(xScale));
-      .selectAll("text")
-      .attr("transform", "rotate(-45)") // Rotate labels by 45 degrees
-      .style("text-anchor", "end"); // Align the text at the end
-    
+
     g.append("g")
       .call(d3.axisLeft(yScale));
 
@@ -134,7 +128,7 @@ function createScene2() {
       {
         note: { label: "Car with highest average highway mileage" },
         x: xScale(top5Cars[0].Make),
-        y: yScale(+top5Cars[0].AverageHighwayMPG),
+        y: yScale(+top5Cars[0]["AverageHighwayMPG"]),
         dy: -30,
         dx: 0
       }
@@ -150,18 +144,17 @@ function createScene3() {
   d3.select("#sceneTitle").text("Comparison Between Engine Cylinders and Average City MPG for Selected Brands");
   // Filter data based on selected brands
   d3.csv("https://raw.githubusercontent.com/TurtleJoker/CS416_Project/main/cars2017.csv").then(data => {
-    const filteredData = data.filter(d => selectedBrands.includes(d.Brand));
-
-    // Clear the existing visualization
-    d3.select("#visualization").selectAll("*").remove();
-    const svg = d3.select("#visualization");
-    const margin = { top: 20, right: 40, bottom: 30, left: 40 };
+    const selectedData = data.filter(d => selectedBrands.includes(d.Make));
+    const svg = d3.select("#visualization").html("");
+    const margin = { top: 20, right: 20, bottom: 30, left: 40 };
     const width = +svg.attr("width") - margin.left - margin.right;
     const height = +svg.attr("height") - margin.top - margin.bottom;
     const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+    const xScale = d3.scaleLinear().range([0, width]);
+    const yScale = d3.scaleLinear().range([height, 0]);
 
-    const xScale = d3.scaleLinear().range([0, width]).domain([0, d3.max(selectedData, d => +d.EngineCylinders)]);
-    const yScale = d3.scaleLinear().range([height, 0]).domain([0, d3.max(selectedData, d => +d.AverageCityMPG)]);
+    xScale.domain([0, d3.max(selectedData, d => +d["EngineCylinders"])]);
+    yScale.domain([0, d3.max(selectedData, d => +d["AverageCityMPG"])]);
 
     g.append("g")
       .attr("transform", `translate(0,${height})`)
@@ -174,8 +167,8 @@ function createScene3() {
       .data(selectedData)
       .enter().append("circle")
       .attr("class", "dot")
-      .attr("cx", d => xScale(+d.EngineCylinders))
-      .attr("cy", d => yScale(+d.AverageCityMPG))
+      .attr("cx", d => xScale(+d["EngineCylinders"]))
+      .attr("cy", d => yScale(+d["AverageCityMPG"]))
       .attr("r", 5);
 
     // Annotations for Scene 3
