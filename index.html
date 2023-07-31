@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Narrative Visualization Jiahao Zhong</title>
-    <!-- Include D3.js Library -->
     <script src="https://d3js.org/d3.v5.min.js"></script>
-    <!-- Include d3-annotation Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.5.1/d3-annotation.min.js" integrity="sha512-iBAeBWWWFb8HqSBcrqcz98iIpuVH1la39dEYHtyQ/pGpeCQTQVvLJOWAuhv2Q7JSHp9k7hWA7sGxU3hHJe+tFg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://unpkg.com/topojson-client@3"></script>
     <style>
@@ -23,17 +21,17 @@
     </style>
 </head>
 <body>
+    <h1 id="sceneTitle"></h1>
     <div id="controls">
         <button onclick="createScene1()">Scene 1</button>
         <button onclick="createScene2()">Scene 2</button>
         <button onclick="createScene3()">Scene 3</button>
     </div>
-    <h2 id="sceneTitle"></h2>
-    <div id="brandSelection"> <!-- Change the id to "brandSelection" -->
-        <input type="checkbox" id="Toyota" value="Toyota" checked>
-        <label for="Toyota">Toyota</label>
-        <input type="checkbox" id="Ford" value="Ford" checked>
-        <label for="Ford">Ford</label>
+    <div id="brandSelection">
+        <input type="checkbox" id="brand_Toyota" value="Toyota" checked>
+        <label for="brand_Toyota">Toyota</label>
+        <input type="checkbox" id="brand_Ford" value="Ford" checked>
+        <label for="brand_Ford">Ford</label>
     </div>
     <svg id="visualization" width="800" height="600"></svg>
     <script src="script.js"></script>
