@@ -1,14 +1,14 @@
-// Parameters
+// Global variable to track selected brands
 let selectedBrands = ['Toyota', 'Ford'];
 
 // Event Listener for Checkboxes
-d3.selectAll("input[type=checkbox]").on("change", function() {
+d3.selectAll("input[type=checkbox]").on("change", function () {
   if (this.checked) {
     selectedBrands.push(this.value);
   } else {
     selectedBrands = selectedBrands.filter(brand => brand !== this.value);
   }
-  createScene3(); // Update the scene
+  updateScene(); // Update the scene
 });
 
 // Global variable to track current scene
@@ -25,38 +25,45 @@ function updateScene() {
   }
 }
 
-//
+// Scene 1: Overview of Car Brands and Their Average City Mileage
 function createScene1() {
   currentScene = 1;
   d3.select("#sceneTitle").text("Overview of Car Brands' Average City Mileage");
   d3.csv("https://raw.githubusercontent.com/TurtleJoker/CS416_Project/main/cars2017.csv").then(data => {
     // Clear the existing visualization
-    d3.select("#visualization").selectAll("*").remove();
-    const svg = d3.select("#visualization");
-    const margin = { top: 20, right: 40, bottom: 30, left: 40 };
+    const svg = d3.select("#visualization").html("");
+    const margin = { top: 20, right: 20, bottom: 80, left: 80 };
     const width = +svg.attr("width") - margin.left - margin.right;
     const height = +svg.attr("height") - margin.top - margin.bottom;
     const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Group data by Make and calculate the average city MPG
-    const groupedData = d3.nest()
+    // Average mileage by brand
+    const averageMileageByBrand = d3.nest()
       .key(d => d.Make)
-      .rollup(v => d3.mean(v, d => +d.AverageCityMPG))
+      .rollup(v => d3.mean(v, d => +d["City MPG"]))
       .entries(data);
 
-    const xScale = d3.scaleBand().rangeRound([0, width]).domain(groupedData.map(d => d.key)).padding(0.1);
-    const yScale = d3.scaleLinear().rangeRound([height, 0]).domain([0, d3.max(groupedData, d => d.value)]);
+    const xScale = d3.scaleBand().rangeRound([0, width]);
+    const yScale = d3.scaleLinear().rangeRound([height, 0]);
+
+    xScale.domain(averageMileageByBrand.map(d => d.key));
+    yScale.domain([0, d3.max(averageMileageByBrand, d => d.value)]);
 
     g.append("g")
       .attr("transform", `translate(0,${height})`)
-      .call(d3.axisBottom(xScale));
+      .call(d3.axisBottom(xScale))
+      .selectAll("text")
+      .attr("transform", "rotate(-45)")
+      .attr("dx", "-.8em")
+      .attr("dy", ".15em")
+      .style("text-anchor", "end");
     
 
     g.append("g")
       .call(d3.axisLeft(yScale));
 
     g.selectAll(".bar")
-      .data(groupedData)
+      .data(averageMileageByBrand)
       .enter().append("rect")
       .attr("class", "bar")
       .attr("x", d => xScale(d.key))
@@ -65,12 +72,11 @@ function createScene1() {
       .attr("height", d => height - yScale(d.value));
 
     // Annotations for Scene 1
-    const highestMileageBrand = groupedData.reduce((max, brand) => (brand.value > max.value ? brand : max), groupedData[0]);
     const annotations = [
       {
         note: { label: "Highest average city mileage" },
-        x: xScale(highestMileageBrand.key),
-        y: yScale(highestMileageBrand.value),
+        x: xScale("Toyota"), // Example
+        y: yScale(28), // Example
         dy: -30,
         dx: 0
       }
@@ -80,7 +86,7 @@ function createScene1() {
   });
 }
 
-// Scene 2: Focus on the Top 5 Cars with the Highest Average Highway Mileage (Line Chart)
+// Scene 2: Focus on the Top 5 Most Fuel-Efficient Cars on the Highway
 function createScene2() {
   currentScene = 2;
   d3.select("#sceneTitle").text("Top 5 Most Fuel-Efficient Cars on the Highway");
@@ -138,12 +144,13 @@ function createScene2() {
   });
 }
 
-// Scene 3: Comparison Between Engine Cylinders and Average City MPG for Selected Brands (Scatter Plot)
+// Scene 3: Comparison Between Engine Cylinders and Average City MPG for Selected Brands
 function createScene3() {
   currentScene = 3;
   d3.select("#sceneTitle").text("Comparison Between Engine Cylinders and Average City MPG for Selected Brands");
+  // Filter data based on selected brands
   d3.csv("https://raw.githubusercontent.com/TurtleJoker/CS416_Project/main/cars2017.csv").then(data => {
-    const filteredData = data.filter(d => selectedBrands.includes(d.Make));
+    const filteredData = data.filter(d => selectedBrands.includes(d.Brand));
 
     // Clear the existing visualization
     d3.select("#visualization").selectAll("*").remove();
