@@ -67,6 +67,7 @@ function createScene1() {
       .attr("y", d => yScale(d.value))
       .attr("width", xScale.bandwidth())
       .attr("height", d => height - yScale(d.value));
+      .attr("fill", "blue");
 
     // Annotations for Scene 1
     const highestMileageBrand = groupedData.reduce((max, brand) => (brand.value > max.value ? brand : max), groupedData[0]);
