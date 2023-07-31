@@ -66,7 +66,7 @@ function createScene1() {
       .attr("x", d => xScale(d.key))
       .attr("y", d => yScale(d.value))
       .attr("width", xScale.bandwidth())
-      .attr("height", d => height - yScale(d.value));
+      .attr("height", d => height - yScale(d.value))
       .attr("fill", "blue");
 
     // Annotations for Scene 1
