@@ -17,7 +17,7 @@ function createScene1() {
     // Clear the existing visualization
     d3.select("#visualization").selectAll("*").remove();
     const svg = d3.select("#visualization");
-    const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+    const margin = { top: 20, right: 40, bottom: 30, left: 40 };
     const width = +svg.attr("width") - margin.left - margin.right;
     const height = +svg.attr("height") - margin.top - margin.bottom;
     const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
@@ -34,6 +34,7 @@ function createScene1() {
     g.append("g")
       .attr("transform", `translate(0,${height})`)
       .call(d3.axisBottom(xScale));
+    
 
     g.append("g")
       .call(d3.axisLeft(yScale));
@@ -71,7 +72,7 @@ function createScene2() {
     // Clear the existing visualization
     d3.select("#visualization").selectAll("*").remove();
     const svg = d3.select("#visualization");
-    const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+    const margin = { top: 20, right: 40, bottom: 30, left: 40 };
     const width = +svg.attr("width") - margin.left - margin.right;
     const height = +svg.attr("height") - margin.top - margin.bottom;
     const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
@@ -82,7 +83,10 @@ function createScene2() {
     g.append("g")
       .attr("transform", `translate(0,${height})`)
       .call(d3.axisBottom(xScale));
-
+      .selectAll("text")
+      .attr("transform", "rotate(-45)") // Rotate labels by 45 degrees
+      .style("text-anchor", "end"); // Align the text at the end
+    
     g.append("g")
       .call(d3.axisLeft(yScale));
 
@@ -124,7 +128,7 @@ function createScene3() {
     // Clear the existing visualization
     d3.select("#visualization").selectAll("*").remove();
     const svg = d3.select("#visualization");
-    const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+    const margin = { top: 20, right: 40, bottom: 30, left: 40 };
     const width = +svg.attr("width") - margin.left - margin.right;
     const height = +svg.attr("height") - margin.top - margin.bottom;
     const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
