@@ -23,8 +23,8 @@ function createScene1() {
     const xScale = d3.scaleBand().rangeRound([0, width]);
     const yScale = d3.scaleLinear().rangeRound([height, 0]);
 
-    xScale.domain(data.map(d => d.Brand));
-    yScale.domain([0, d3.max(data, d => d.Mileage)]);
+    xScale.domain(data.map(d => d.Make));
+    yScale.domain([0, d3.max(data, d => d.AverageCityMPG)]);
 
     g.append("g")
       .attr("transform", `translate(0,${height})`)
