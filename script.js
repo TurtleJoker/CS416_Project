@@ -174,6 +174,7 @@ function createScene3() {
       .attr("cx", d => xScale(+d["EngineCylinders"]))
       .attr("cy", d => yScale(+d["AverageCityMPG"]))
       .attr("r", 5)
+      .attr("fill", d => d.Make === "Toyota" ? "red" : "blue")
       .on("mouseover", function (d) {
         // Create annotation for the hovered item
         const annotation = [
