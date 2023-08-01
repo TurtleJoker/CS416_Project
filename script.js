@@ -176,14 +176,16 @@ function createScene3() {
       .attr("r", 5)
       .attr("fill", d => d.Make === "Toyota" ? "red" : "blue")
       .on("mouseover", function (d) {
+        const dx = (xScale(+d.EngineCylinders) < 50) ? 10 : -50;
+        const dy = (yScale(+d.AverageCityMPG) < 30) ? 30 : -30;
         // Create annotation for the hovered item
         const annotation = [
           {
             note: { label: `${d.Make}: ${d.EngineCylinders} cylinders, ${d.AverageCityMPG} MPG` },
             x: xScale(+d.EngineCylinders),
             y: yScale(+d.AverageCityMPG),
-            dy: -10,
-            dx: 0
+            dy: dy,
+            dx: dx
           }
         ];
         const makeAnnotations = d3.annotation().annotations(annotation);
