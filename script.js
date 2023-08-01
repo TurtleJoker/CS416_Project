@@ -94,7 +94,7 @@ function createScene2() {
   d3.select("#sceneTitle").text("Top 5 Most Fuel-Efficient Cars on the Highway");
   d3.csv("https://raw.githubusercontent.com/TurtleJoker/CS416_Project/main/cars2017.csv").then(data => {
     const svg = d3.select("#visualization").html("");
-    const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+    const margin = { top: 40, right: 60, bottom: 30, left: 60 };
     const width = +svg.attr("width") - margin.left - margin.right;
     const height = +svg.attr("height") - margin.top - margin.bottom;
     const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
@@ -127,18 +127,39 @@ function createScene2() {
       .attr("stroke-width", 1.5)
       .attr("d", line);
 
+    g.selectAll(".highlight-point")
+      .data(top5Cars)
+      .enter().append("circle")
+      .attr("class", "highlight-point")
+      .attr("cx", d => xScale(d.Make))
+      .attr("cy", d => yScale(+d.AverageHighwayMPG))
+      .attr("r", 5)
+      .attr("fill", "red");
+
     // Annotations for Scene 2
-    const annotations = [
-      {
-        note: { label: "Car with highest average highway mileage" },
-        x: xScale(top5Cars[0].Make),
-        y: yScale(+top5Cars[0]["AverageHighwayMPG"]),
-        dy: -30,
-        dx: 0
-      }
-    ];
-    const makeAnnotations = d3.annotation().annotations(annotations);
-    g.append("g").call(makeAnnotations);
+    g.selectAll(".highlight-point")
+      .on("mouseover", function (d) {
+        const dx = (xScale(d.Make) < 50) ? 10 : (xScale(d.Make) > width - 50) ? -100 : -50;
+        const dy = (yScale(+d.AverageCityMPG) < 30) ? 30 : -30;
+
+        const annotations = [
+          {
+            note: {
+              label: `${d.Make}: ${d.AverageHighwayMPG} MPG`,
+              wrap: 200
+            },
+            x: xScale(d.Make),
+            y: yScale(+d.AverageHighwayMPG),
+            dy: dy,
+            dx: dx
+          }
+        ];
+        const makeAnnotations = d3.annotation().annotations(annotations);
+        g.append("g").attr("class", "annotation-group").call(makeAnnotations);
+      })
+      .on("mouseout", function () {
+        g.selectAll(".annotation-group").remove();
+      });
   });
 }
 
