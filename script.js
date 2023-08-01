@@ -173,18 +173,25 @@ function createScene3() {
       .attr("class", "dot")
       .attr("cx", d => xScale(+d["EngineCylinders"]))
       .attr("cy", d => yScale(+d["AverageCityMPG"]))
-      .attr("r", 5);
-
-    // Annotations for Scene 3
-    const annotations = selectedData.map(car => ({
-      note: { label: `${car.Make}: ${car.EngineCylinders} cylinders, ${car.AverageCityMPG} MPG` },
-      x: xScale(+car.EngineCylinders),
-      y: yScale(+car.AverageCityMPG),
-      dy: -10,
-      dx: 0
-    }));
-    const makeAnnotations = d3.annotation().annotations(annotations);
-    g.append("g").call(makeAnnotations);
+      .attr("r", 5)
+      .on("mouseover", function (d) {
+        // Create annotation for the hovered item
+        const annotation = [
+          {
+            note: { label: `${d.Make}: ${d.EngineCylinders} cylinders, ${d.AverageCityMPG} MPG` },
+            x: xScale(+d.EngineCylinders),
+            y: yScale(+d.AverageCityMPG),
+            dy: -10,
+            dx: 0
+          }
+        ];
+        const makeAnnotations = d3.annotation().annotations(annotation);
+        g.append("g").attr("class", "annotation-group").call(makeAnnotations);
+      })
+      .on("mouseout", function () {
+        // Remove annotation when mouse leaves the item
+        g.selectAll(".annotation-group").remove();
+      });
   });
 }
 
