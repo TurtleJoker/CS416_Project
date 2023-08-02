@@ -46,6 +46,7 @@ function createScene1() {
 
     const xScale = d3.scaleBand().rangeRound([0, width]).domain(groupedData.map(d => d.key));
     const yScale = d3.scaleLinear().rangeRound([height, 0]).domain([0, d3.max(groupedData, d => d.value)]);
+    const highestMileageBrand = groupedData.reduce((max, brand) => (brand.value > max.value ? brand : max), groupedData[0]);
 
     g.append("g")
       .attr("transform", `translate(0,${height})`)
@@ -70,23 +71,31 @@ function createScene1() {
       .attr("height", d => height - yScale(d.value))
       .attr("fill", "lightblue")
       .attr("stroke", "black")
-      .attr("stroke-width", 1);
+      .attr("stroke-width", 1)
+      .on("mouseover", function (d, i) {
+        const dx = (xScale(d.key) < 50) ? 10 : (xScale(d.key) > width - 50) ? -100 : -50;
+        const dy = (yScale(d.value) < 30) ? 30 : -30;
 
-    // Annotations for Scene 1
-    const highestMileageBrand = groupedData.reduce((max, brand) => (brand.value > max.value ? brand : max), groupedData[0]);
-    const annotations = [
-      {
-        note: { label: "Highest average city mileage" },
-        x: xScale(highestMileageBrand.key),
-        y: yScale(highestMileageBrand.value),
-        dy: -30,
-        dx: 0
-      }
-    ];
-    const makeAnnotations = d3.annotation().annotations(annotations);
-    g.append("g").call(makeAnnotations);
+        const annotation = [
+          {
+            note: { label: "Average city mileage: " + d.value.toFixed(2) },
+            x: xScale(d.key),
+            y: yScale(d.value),
+            dy: dy,
+            dx: dx,
+            color: (d.key === highestMileageBrand.key) ? "gold" : "black"
+          }
+        ];
+        const makeAnnotation = d3.annotation().annotations(annotation);
+        g.append("g").call(makeAnnotation);
+      })
+      .on("mouseout", function (d, i) {
+        g.selectAll("g.annotation-connector, g.annotation-note").remove();
+      });
   });
 }
+  
+
 
 // Scene 2: Focus on the Top 5 Most Fuel-Efficient Cars on the Highway
 function createScene2() {
